@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Favicon Forge — Favicon 生成器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--text2:#8b949e;--accent:#58a6ff;--accent2:#3fb950;--hover:#1f2937;--input:#0d1117}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:20px}
+h1{font-size:24px;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+h1 .badge{font-size:12px;color:var(--accent2);background:rgba(63,185,80,.15);padding:2px 8px;border-radius:4px}
+.subtitle{font-size:13px;color:var(--text2);margin-bottom:20px}
+.privacy-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:2px 8px;font-size:10px;color:var(--accent2)}
+.main{display:flex;gap:20px;flex-wrap:wrap}
+.left{flex:1;min-width:300px}
+.right{width:300px;display:flex;flex-direction:column;align-items:center}
+.section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}
+.section h3{font-size:14px;color:#fff;margin-bottom:12px}
+.row{display:flex;gap:12px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.row label{font-size:12px;color:var(--text2);min-width:70px}
+.row input[type=text]{flex:1;padding:6px 10px;background:var(--input);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:14px;outline:none}
+.row input[type=text]:focus{border-color:var(--accent)}
+.row input[type=color]{width:36px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:0}
+.row input[type=range]{flex:1;accent-color:var(--accent)}
+.row select{padding:5px 8px;background:var(--input);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px}
+.btn{padding:6px 12px;border:1px solid var(--border);border-radius:5px;background:var(--card);color:var(--text);cursor:pointer;font-size:12px;transition:all .15s}
+.btn:hover{background:var(--hover);border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.preview-area{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;text-align:center;margin-bottom:12px}
+.preview-big{margin:0 auto 16px}
+.sizes{display:flex;align-items:flex-end;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.size-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.size-item span{font-size:10px;color:var(--text2)}
+.emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(32px,1fr));gap:4px;max-height:120px;overflow:auto}
+.emoji-grid span{font-size:20px;cursor:pointer;text-align:center;padding:2px;border-radius:4px;transition:background .1s}
+.emoji-grid span:hover{background:var(--hover)}
+.code-area{background:var(--input);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:monospace;font-size:11px;white-space:pre-wrap;word-break:break-all;color:var(--accent2);position:relative;max-height:120px;overflow:auto}
+.code-area .copy-btn{position:absolute;top:6px;right:6px;padding:3px 8px;font-size:10px;background:var(--card);border:1px solid var(--border);border-radius:3px;cursor:pointer;color:var(--text2)}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px}
+.preset{width:40px;height:40px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.preset:hover{border-color:var(--accent);transform:scale(1.1)}
+@media(max-width:768px){.main{flex-direction:column}.right{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>🔖 Favicon Forge <span class="badge">离线</span> <span class="privacy-badge">🔒 完全离线</span></h1>
+<p class="subtitle">Favicon 生成器 — 文字/Emoji/形状，多尺寸导出，生成 HTML 标签</p>
+
+<div class="main">
+<div class="left">
+<div class="section">
+<h3>✏️ 内容</h3>
+<div class="row"><label>文字</label><input type="text" id="favText" value="R" maxlength="4" oninput="render()"></div>
+<div class="row"><label>字号</label><input type="range" id="fontSize" min="20" max="200" value="120" oninput="render()"><span id="fontSizeVal" style="font-size:11px;color:var(--text2)">120</span></div>
+</div>
+
+<div class="section">
+<h3>🎨 颜色</h3>
+<div class="row"><label>背景色</label><input type="color" id="bgColor" value="#58a6ff" oninput="render()"><span id="bgHex" style="font-size:11px;color:var(--text2)">#58a6ff</span></div>
+<div class="row"><label>文字色</label><input type="color" id="fgColor" value="#ffffff" oninput="render()"><span id="fgHex" style="font-size:11px;color:var(--text2)">#ffffff</span></div>
+</div>
+
+<div class="section">
+<h3>📐 形状</h3>
+<div class="row"><label>形状</label>
+<select id="shape" onchange="render()">
+<option value="square">方形</option>
+<option value="rounded" selected>圆角方形</option>
+<option value="circle">圆形</option>
+</select></div>
+<div class="row"><label>圆角</label><input type="range" id="radius" min="0" max="50" value="22" oninput="render()"><span id="radiusVal" style="font-size:11px;color:var(--text2)">22%</span></div>
+</div>
+
+<div class="section">
+<h3>✨ 预设</h3>
+<div class="presets" id="presets"></div>
+</div>
+
+<div class="section">
+<h3>😀 Emoji 快选</h3>
+<div class="emoji-grid" id="emojiGrid"></div>
+</div>
+</div>
+
+<div class="right">
+<div class="preview-area">
+<h3 style="margin-bottom:12px">预览</h3>
+<canvas id="previewBig" class="preview-big" width="128" height="128"></canvas>
+<div class="sizes" id="sizePreview"></div>
+</div>
+
+<div class="section" style="width:100%">
+<h3>📥 导出</h3>
+<div class="btn-group">
+<button class="btn primary" onclick="exportAll()">📥 全部尺寸 PNG</button>
+<button class="btn" onclick="exportSingle(32)">32px</button>
+<button class="btn" onclick="exportSingle(180)">180px</button>
+<button class="btn" onclick="exportSingle(512)">512px</button>
+</div>
+</div>
+
+<div class="section" style="width:100%">
+<h3>📋 HTML 标签</h3>
+<div class="code-area"><button class="copy-btn" onclick="copyHtml()">复制</button><span id="htmlTags"></span></div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+var presets = [
+  { bg:'#58a6ff', fg:'#fff', text:'R' },
+  { bg:'#3fb950', fg:'#fff', text:'✓' },
+  { bg:'#f85149', fg:'#fff', text:'!' },
+  { bg:'#d2a8ff', fg:'#fff', text:'✦' },
+  { bg:'#0d1117', fg:'#58a6ff', text:'{ }' },
+  { bg:'#1a1a2e', fg:'#e94560', text:'⚡' },
+  { bg:'#fff', fg:'#000', text:'A' },
+  { bg:'#000', fg:'#fff', text:'∞' },
+  { bg:'#ff6b6b', fg:'#fff', text:'♥' },
+  { bg:'#4ecdc4', fg:'#fff', text:'⚙' },
+  { bg:'#ffe66d', fg:'#333', text:'★' },
+  { bg:'#2d3436', fg:'#fdcb6e', text:'☀' },
+];
+
+var emojis = ['🚀','💻','🎮','📱','🎨','🔧','⚡','🌟','🔥','💎','🎯','📊','🛠️','💡','🌈','🎵','📸','🔒','✨','🎪','🏆','❤️','⭐','📌','🎵','🔮','🧪','🤖','👾','🎮'];
+
+function render() {
+  var text = document.getElementById('favText').value;
+  var fontSize = parseInt(document.getElementById('fontSize').value);
+  var bg = document.getElementById('bgColor').value;
+  var fg = document.getElementById('fgColor').value;
+  var shape = document.getElementById('shape').value;
+  var radius = parseInt(document.getElementById('radius').value);
+  
+  document.getElementById('fontSizeVal').textContent = fontSize;
+  document.getElementById('bgHex').textContent = bg;
+  document.getElementById('fgHex').textContent = fg;
+  document.getElementById('radiusVal').textContent = radius + '%';
+  
+  // Draw big preview
+  drawFavicon(document.getElementById('previewBig'), 128, text, fontSize, bg, fg, shape, radius);
+  
+  // Draw size previews
+  var sizes = [16, 32, 48, 180, 192, 512];
+  var container = document.getElementById('sizePreview');
+  container.innerHTML = sizes.map(function(s) {
+    var displaySize = Math.min(s, 64);
+    return '<div class="size-item"><canvas id="size' + s + '" width="' + displaySize + '" height="' + displaySize + '"></canvas><span>' + s + 'px</span></div>';
+  }).join('');
+  
+  sizes.forEach(function(s) {
+    var displaySize = Math.min(s, 64);
+    drawFavicon(document.getElementById('size' + s), displaySize, text, fontSize * displaySize / 128, bg, fg, shape, radius);
+  });
+  
+  // HTML tags
+  document.getElementById('htmlTags').textContent = 
+    '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">\n' +
+    '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">\n' +
+    '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n' +
+    '<link rel="manifest" href="/site.webmanifest">';
+}
+
+function drawFavicon(canvas, size, text, fontSize, bg, fg, shape, radius) {
+  canvas.width = size;
+  canvas.height = size;
+  var ctx = canvas.getContext('2d');
+  
+  // Background
+  ctx.fillStyle = bg;
+  if (shape === 'circle') {
+    ctx.beginPath();
+    ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (shape === 'rounded') {
+    var r = size * radius / 100;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(size - r, 0);
+    ctx.quadraticCurveTo(size, 0, size, r);
+    ctx.lineTo(size, size - r);
+    ctx.quadraticCurveTo(size, size, size - r, size);
+    ctx.lineTo(r, size);
+    ctx.quadraticCurveTo(0, size, 0, size - r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.fill();
+  } else {
+    ctx.fillRect(0, 0, size, size);
+  }
+  
+  // Text
+  ctx.fillStyle = fg;
+  ctx.font = 'bold ' + fontSize + 'px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, size / 2, size / 2 + fontSize * 0.05);
+}
+
+function exportSingle(s) {
+  var canvas = document.createElement('canvas');
+  var text = document.getElementById('favText').value;
+  var fontSize = parseInt(document.getElementById('fontSize').value) * s / 128;
+  drawFavicon(canvas, s, text, fontSize, document.getElementById('bgColor').value, document.getElementById('fgColor').value, document.getElementById('shape').value, parseInt(document.getElementById('radius').value));
+  var link = document.createElement('a');
+  link.download = 'favicon-' + s + 'x' + s + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function exportAll() {
+  [16, 32, 48, 180, 192, 512].forEach(function(s, i) {
+    setTimeout(function() { exportSingle(s); }, i * 200);
+  });
+}
+
+function copyHtml() {
+  navigator.clipboard.writeText(document.getElementById('htmlTags').textContent);
+  var btn = document.querySelector('.copy-btn');
+  btn.textContent = '✓';
+  setTimeout(function() { btn.textContent = '复制'; }, 1500);
+}
+
+function applyPreset(p) {
+  document.getElementById('favText').value = p.text;
+  document.getElementById('bgColor').value = p.bg;
+  document.getElementById('fgColor').value = p.fg;
+  render();
+}
+
+// Init presets
+document.getElementById('presets').innerHTML = presets.map(function(p) {
+  return '<div class="preset" style="background:' + p.bg + ';color:' + p.fg + '" onclick="applyPreset(' + JSON.stringify(p).replace(/"/g, '&quot;') + ')">' + p.text + '</div>';
+}).join('');
+
+// Init emoji grid
+document.getElementById('emojiGrid').innerHTML = emojis.map(function(e) {
+  return '<span onclick="document.getElementById(\'favText\').value=\'' + e + '\';render()">' + e + '</span>';
+}).join('');
+
+render();
+</script>
+</body>
+</html>
