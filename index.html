@@ -97,8 +97,12 @@ h1 .badge{font-size:12px;color:var(--accent2);background:rgba(63,185,80,.15);pad
 <h3>📥 导出</h3>
 <div class="btn-group">
 <button class="btn primary" onclick="exportAll()">📥 全部尺寸 PNG</button>
+<button class="btn primary" onclick="exportSVG()">📥 导出 SVG</button>
+<button class="btn" onclick="exportSingle(16)">16px</button>
 <button class="btn" onclick="exportSingle(32)">32px</button>
+<button class="btn" onclick="exportSingle(48)">48px</button>
 <button class="btn" onclick="exportSingle(180)">180px</button>
+<button class="btn" onclick="exportSingle(192)">192px</button>
 <button class="btn" onclick="exportSingle(512)">512px</button>
 </div>
 </div>
@@ -218,6 +222,39 @@ function exportAll() {
     setTimeout(function() { exportSingle(s); }, i * 200);
   });
 }
+function exportSVG() {
+  var text = document.getElementById('favText').value;
+  var fontSize = parseInt(document.getElementById('fontSize').value);
+  var bg = document.getElementById('bgColor').value;
+  var fg = document.getElementById('fgColor').value;
+  var shape = document.getElementById('shape').value;
+  var radius = parseInt(document.getElementById('radius').value);
+  var size = 512;
+
+  var shapeEl = '';
+  if (shape === 'circle') {
+    shapeEl = '<circle cx="' + size/2 + '" cy="' + size/2 + '" r="' + size/2 + '" fill="' + bg + '"/>';
+  } else if (shape === 'rounded') {
+    var r = size * radius / 100;
+    shapeEl = '<rect width="' + size + '" height="' + size + '" rx="' + r + '" ry="' + r + '" fill="' + bg + '"/>';
+  } else {
+    shapeEl = '<rect width="' + size + '" height="' + size + '" fill="' + bg + '"/>';
+  }
+
+  var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">\n' +
+    shapeEl + '\n' +
+    '<text x="' + size/2 + '" y="' + size/2 + '" font-family="-apple-system, sans-serif" font-size="' + fontSize + '" font-weight="bold" fill="' + fg + '" text-anchor="middle" dominant-baseline="central">' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</text>\n' +
+    '</svg>';
+
+  var blob = new Blob([svg], { type: 'image/svg+xml' });
+  var link = document.createElement('a');
+  link.download = 'favicon.svg';
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
 
 function copyHtml() {
   navigator.clipboard.writeText(document.getElementById('htmlTags').textContent);
